@@ -7,7 +7,7 @@ using namespace std;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 int main() {
     cout << "Hello,world" << endl;
-    VectorXd aa = VectorXd ::LinSpaced(3,1,3);
+    VectorXd aa = VectorXd ::LinSpaced(5,1,5);
     cout << aa << endl;
     return 0;
 }
