@@ -19,21 +19,15 @@ namespace FFTLibrary {
 
     // 一维FFT（指定长度n）
     VectorXcd fft(const VectorXd& input, int n) {
-        VectorXd processed = input;
-        int m = n - input.size();
-
-        if (m > 0) {
-            processed.conservativeResize(n);
-            processed.tail(m).setZero();
-        } else if (m < 0) {
-            processed.conservativeResize(n);
-        }
+        VectorXd temp = VectorXd::Zero(n);
+        temp.head(std::min(n, (int)input.size())) = input.head(std::min(n, (int)input.size())); //
 
         FFT<double> fft;
         VectorXcd output;
-        fft.fwd(output, processed);
+        fft.fwd(output, temp);
         return output;
     }
+
 
     // 多维FFT（指定长度n和维度dim）
     MatrixXcd fft(const MatrixXd& input, int n, int dim) {
@@ -48,34 +42,22 @@ namespace FFTLibrary {
             output.resize(n, input.cols());
             for (int col = 0; col < input.cols(); ++col) {
                 VectorXd column = input.col(col);
+                VectorXd temp = VectorXd::Zero(n);
+                temp.head(std::min(n, (int)column.size())) = column.head(std::min(n, (int)column.size()));
+
                 VectorXcd fft_col;
-
-                // 调整列长度到n
-                if (n > column.size()) {
-                    column.conservativeResize(n);
-                    column.tail(n - column.size()).setZero();
-                } else if (n < column.size()) {
-                    column.conservativeResize(n);
-                }
-
-                fft.fwd(fft_col, column);
+                fft.fwd(fft_col, temp);
                 output.col(col) = fft_col;
             }
         } else {  // 按行处理
             output.resize(input.rows(), n);
             for (int row = 0; row < input.rows(); ++row) {
                 VectorXd row_data = input.row(row);
+                VectorXd temp = VectorXd::Zero(n);
+                temp.head(std::min(n, (int)row_data.size())) = row_data.head(std::min(n, (int)row_data.size()));
+
                 VectorXcd fft_row;
-
-                // 调整行长度到n
-                if (n > row_data.size()) {
-                    row_data.conservativeResize(n);
-                    row_data.tail(n - row_data.size()).setZero();
-                } else if (n < row_data.size()) {
-                    row_data.conservativeResize(n);
-                }
-
-                fft.fwd(fft_row, row_data);
+                fft.fwd(fft_row, temp);
                 output.row(row) = fft_row;
             }
         }
