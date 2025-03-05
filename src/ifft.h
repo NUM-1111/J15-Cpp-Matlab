@@ -13,13 +13,6 @@ using namespace std;
 namespace IFFTLibrary {
 
     // 一维IFFT（无指定长度）
-#include <Eigen/Dense>
-#include <unsupported/Eigen/FFT>
-#include <iostream>
-
-    using namespace Eigen;
-    using namespace std;
-
     VectorXcd ifft(const VectorXcd& input) {
         FFT<double> fft;
         VectorXcd output;
