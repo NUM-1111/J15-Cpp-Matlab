@@ -17,5 +17,6 @@ target_include_directories(proName PRIVATE ${EIGEN3_INCLUDE_DIR})
 # 目标 2: 编译 textforEigen.cpp 作为单独的可执行文件
 add_executable(testEigen textforEigen.cpp)
 target_include_directories(testEigen PRIVATE ${EIGEN3_INCLUDE_DIR})
-target_include_directories(testEigen PRIVATE ${EIGEN3_INCLUDE_DIR})
 
+#打印消息
+message(STATUS "Building project ${PROJECT_NAME}")
