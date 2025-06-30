@@ -1,76 +1,87 @@
+#include <arrayfire.h>
 #include <iostream>
+#include <vector>
+#include <algorithm>
+#include <stdexcept>
 #include <Eigen/Dense>
-#include<unsupported/Eigen/FFT>
-#include "fft.h"
-#include "ifft.h"
-#include "conv.h"
+#include <complex>
+#include "tool.h"
+#include <chrono>
 
-using namespace IFFTLibrary;
-using namespace FFTLibrary;
-using namespace ConvLibrary;
+using namespace af;
 
 int main() {
     /*
-    // 测试一维FFT
-    VectorXd vec(4);
-    vec << 1, 2, 3, 4;
-    VectorXcd vec_fft = FFTLibrary::fft(vec,6);
-    std::cout << "一维FFT（n=6）:\n" << vec_fft << std::endl;
+    // AoA_estimate 测试
+    int Number_of_All = 200;
+    int Number_of_Sensor = 4;
+    int Number_of_Angle = 1;
+    double Frequency_of_Center = 3000;
+    double Bandwidth = 1600;
+    double c = 340.0;
+    double d = 0.05;
+    double fs = 48000;
+    Eigen::VectorXd theta = Eigen::VectorXd::LinSpaced(181, -90, 90); // -90~90度
+    // 构造一个简单的信号（单一入射角）
+    double true_angle = 30.0;
+    Eigen::MatrixXd xl(Number_of_All, Number_of_Sensor);
+    for (int n = 0; n < Number_of_All; ++n) {
+        for (int m = 0; m < Number_of_Sensor; ++m) {
+            double t = n / fs;
+            double phase = 2 * M_PI * Frequency_of_Center * t + 2 * M_PI * Frequency_of_Center / c * d * m * std::sin(true_angle * M_PI / 180.0);
+            xl(n, m) = std::sin(phase);
+        }
+    }
+    Eigen::VectorXd Angle_of_Arrival, Angle_of_Spectrum;
+    AoA_estimate(xl, theta, Frequency_of_Center, Bandwidth, c, d, Number_of_Angle, fs, Angle_of_Arrival, Angle_of_Spectrum);
+    std::cout << "估计到的入射角: ";
+    for (int i = 0; i < Angle_of_Arrival.size(); ++i) {
+        std::cout << Angle_of_Arrival(i) << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "对应谱值: ";
+    for (int i = 0; i < Angle_of_Spectrum.size(); ++i) {
+        std::cout << Angle_of_Spectrum(i) << " ";
+    }
+    std::cout << std::endl;
+    */
 
-    // 测试矩阵按列FFT
-    MatrixXd mat(3, 2);
-    mat << 1, 4,
-            2, 5,
-            3, 6;
-    MatrixXcd mat_fft_col = FFTLibrary::fft(mat, 4, 1);
-    std::cout << "矩阵按列FFT（n=4）:\n" << mat_fft_col << std::endl;
+    // conv测试
+    // Eigen::VectorXcd A(5);
+    // A << std::complex<double>(1,1), std::complex<double>(2,-1), std::complex<double>(0,2), std::complex<double>(-1,0), std::complex<double>(0,-1);
+    // Eigen::VectorXd B(3);
+    // B << 1, 2, 3;
+    // Eigen::VectorXcd C = conv(A, B);
+    // std::cout << "conv(A, B) = ";
+    // for (int i = 0; i < C.size(); ++i) {
+    //     std::cout << C(i) << " ";
+    // }
+    // std::cout << std::endl;
 
-     */
+    // fft_conv大规模测试
+    // int N = 100000;
+    // Eigen::VectorXcd A_big = Eigen::VectorXcd::Random(N);
+    // Eigen::VectorXd B_big = Eigen::VectorXd::Random(N);
+    // std::cout << "开始大规模fft_conv..." << std::endl;
+    // auto start = std::chrono::high_resolution_clock::now();
+    // Eigen::VectorXcd C_big = fft_conv(A_big, B_big);
+    // auto end = std::chrono::high_resolution_clock::now();
+    // std::chrono::duration<double> elapsed = end - start;
+    // std::cout << "fft_conv(A_big, B_big) 完成，输出长度: " << C_big.size() << ", 用时: " << elapsed.count() << " 秒" << std::endl;
+    // std::cout << "前3个结果: " << C_big(0) << ", " << C_big(1) << ", " << C_big(2) << std::endl;
 
-    // ifftxian测试数据
-//    VectorXcd input(4);
-//    input << std::complex<double>(1, 0), std::complex<double>(2, 0), std::complex<double>(3, 0), std::complex<double>(4, 0);
-//
-//    // 打印原始数据
-//    cout << "Original Input:\n" << input << "\n\n";
-//
-//    // 计算 IFFT
-//    VectorXcd ifft_result = ifft(input);
-//    cout << "IFFT Result:\n" << ifft_result << "\n";
-//
-//    // 指定长度 IFFT
-//    VectorXcd ifft_result_n = ifft(input, 6);
-//    cout << "IFFT Result with specified length 6:\n" << ifft_result_n << "\n";
-
-
-// 设计测试数据：3x4 矩阵
-//    MatrixXcd input(3, 4);
-//    input << complex<double>(1, 0), complex<double>(2, 0), complex<double>(3, 0), complex<double>(4, 0),
-//            complex<double>(5, 0), complex<double>(6, 0), complex<double>(7, 0), complex<double>(8, 0),
-//            complex<double>(9, 0), complex<double>(10, 0), complex<double>(11, 0), complex<double>(12, 0);
-//
-//    // 打印原始矩阵
-//    cout << "Original Input (3x4 Matrix):\n" << input << "\n\n";
-//
-//    // 计算 IFFT（按行）
-//    MatrixXcd ifft_result_row = ifft(input, 4, 2);  // 4 是指定的长度
-//    cout << "IFFT Result (Row-wise):\n" << ifft_result_row << "\n";
-//
-//    // 计算 IFFT（按列）
-//    MatrixXcd ifft_result_col = ifft(input, 3, 1);  // 4 是指定的长度
-//    cout << "IFFT Result (Column-wise):\n" << ifft_result_col << "\n";
-
-
-    // 输入信号和核
-    VectorXd x(4);
-    x << 1, 2, 3, 4;  // 输入信号 x(t)
-
-    VectorXd h(4);
-    h << 1, 1, 1, 1;  // 卷积核 h(t)
-
-    VectorXd result = conv(x,h);
-
-    cout << result << endl;
+    // fft_conv小规模测试
+    Eigen::VectorXcd A_small(10);
+    for (int i = 0; i < 10; ++i) A_small(i) = std::complex<double>(i + 1, 0.5 * i);
+    Eigen::VectorXd B_small(4);
+    B_small << 1, -1, 2, 0.5;
+    Eigen::VectorXcd C_small = fft_conv(A_small, B_small);
+    std::cout << "fft_conv(A_small, B_small) = ";
+    for (int i = 0; i < C_small.size(); ++i) {
+        std::cout << C_small(i) << " ";
+    }
+    std::cout << std::endl;
 
     return 0;
 }
+
