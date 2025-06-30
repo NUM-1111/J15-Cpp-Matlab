@@ -4,19 +4,25 @@ project(proName)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 指定 vcpkg 安装路径
-set(CMAKE_PREFIX_PATH "C:/Users/29436/vcpkg/installed/x64-windows")
+# 不需要 set(CMAKE_PREFIX_PATH ...)，vcpkg 会通过 toolchain 自动处理
 
-# 查找 Eigen
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(ArrayFire REQUIRED)
 
-# 目标 1: 编译主文件 main.cpp
+message(STATUS "ArrayFire_INCLUDE_DIRS: ${ArrayFire_INCLUDE_DIRS}")
+message(STATUS "ArrayFire_LIBRARIES: ${ArrayFire_LIBRARIES}")
+
 add_executable(proName main.cpp)
 target_include_directories(proName PRIVATE ${EIGEN3_INCLUDE_DIR})
+target_include_directories(proName PRIVATE ${ArrayFire_INCLUDE_DIRS})
 
-# 目标 2: 编译 textforEigen.cpp 作为单独的可执行文件
+target_link_libraries(proName PRIVATE
+        "C:/Users/29436/vcpkg/installed/x64-windows/lib/af.lib"
+)
+
+
+message(STATUS "ArrayFire_INCLUDE_DIRS: ${ArrayFire_INCLUDE_DIRS}")
+message(STATUS "ArrayFire_LIBRARIES: ${ArrayFire_LIBRARIES}")
+
 add_executable(testEigen textforEigen.cpp)
 target_include_directories(testEigen PRIVATE ${EIGEN3_INCLUDE_DIR})
-
-#打印消息
-message(STATUS "Building project ${PROJECT_NAME}")
